@@ -46,6 +46,8 @@
     fun {ApplyDurationAux DurationPerElement Partition}
         case Partition
         of nil then nil
+        [] X | Y then
+            {ApplyDurationAux DurationPerElement X} | {ApplyDurationAux DurationPerElement Y}
         [] silence then
             silence(duration: DurationPerElement)
         [] Name#Octave then note(name:Name octave:Octave sharp:true duration:DurationPerElement instrument:none)
@@ -60,16 +62,16 @@
                     duration:DurationPerElement
                     instrument: none)
             end
-        [] X | Y then
-            {ApplyDurationAux DurationPerElement X} | {ApplyDurationAux DurationPerElement Y}
         end
      end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     fun {ApplyDuration TotalDuration PartitionEtendue}
-        NbElements = {CountElements PartitionEtendue}
+        NbElements DurationPerElement
+        NbElements = {Count PartitionEtendue}
         DurationPerElement = TotalDuration / NbElements
+    in
         {ApplyDurationAux DurationPerElement PartitionEtendue}
     end
 
@@ -78,24 +80,19 @@
     fun {ApplyStretch Factor PartitionEtendue}
         case PartitionEtendue
         of nil then nil
-        [] silence then
-            silence(duration: Factor)
-        [] Name#Octave then note(name:Name octave:Octave sharp:true duration:Factor instrument:none)
-        [] Atom then
-            case {AtomToString Atom}
-            of [_] then
-                note(name:Atom octave:4 sharp:false duration:Factor instrument:none)
-            [] [N O] then
-                note(name:{StringToAtom [N]}
-                    octave:{StringToInt [O]}
-                    sharp:false
-                    duration:Factor
-                    instrument: none)
-            end
         [] X | Y then
-            {ApplyStretch Factor X} | {ApplyStretch Factor Y}
+           if {IsRecord X} andthen {Label X} == note then
+              note(name:N octave:O sharp:S duration:D instrument:I) = X
+           in
+              note(name:N octave:O sharp:S duration:D * Factor instrument:I) | {ApplyStretch Factor Y}
+           elseif {IsRecord X} andthen {Label X} == silence then
+              silence(duration:D) = X
+           in
+              silence(duration:D * Factor) | {ApplyStretch Factor Y}
+           end
         end
      end
+     
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -140,7 +137,7 @@
         NewMidi = Midi + Semitones
      in
         {MidiToNote NewMidi D I}
-     end     
+    end     
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -186,27 +183,32 @@
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    
     fun {PartitionToTimedList Partition}
-        % TODO
         case Partition
-        of nil then 
-            nil
+        of nil then
+           nil
         [] X | Y then
-            {PartitionToTimedList X} | {PartitionToTimedList Y}
-        [] duration(seconds:S P) then
-            {ApplyDuration S {PartitionToTimedList P}}
-        [] stretch(factor:F P) then
-            {ApplyStretch F {PartitionToTimedList P}}
-        [] transpose(semitones:N P) then
-            {ApplyTranspose N {PartitionToTimedList P}}
-        [] drone(note:N amount:A) then
-            {PartitionToTimedList {HandleDrone N A}}
-        [] mute(amount:A) then
-            {PartitionToTimedList {HandleMute A}}
-        else
-            {NoteToExtended Partition}
+           if {IsRecord X} then
+              case X
+              of duration(seconds:S P) then
+                 {ApplyDuration S {PartitionToTimedList P}}
+              [] stretch(factor:F P) then
+                 {ApplyStretch F {PartitionToTimedList P}}
+              [] transpose(semitones:N P) then
+                 {ApplyTranspose N {PartitionToTimedList P}}
+              [] drone(note:N amount:A) then
+                 {PartitionToTimedList {HandleDrone N A}}
+              [] mute(amount:A) then
+                 {PartitionToTimedList {HandleMute A}}
+              else
+                 {NoteToExtended X} | {PartitionToTimedList Y}
+              end
+           elseif {IsList X} then
+              {PartitionToTimedList X} | {PartitionToTimedList Y}
+           else
+              {NoteToExtended X} | {PartitionToTimedList Y}
+           end
         end
-    end
-
+     end
+     
 end
