@@ -17,6 +17,14 @@ test: all
 	@echo RUN main.ozf
 	@$(OZENGINE) main.ozf --test
 
+exemple: all
+	@echo RUN main.ozf
+	@$(OZENGINE) main.ozf --exemple
+
+extension: all
+	@echo RUN main.ozf
+	@$(OZENGINE) main.ozf --exemple
+
 %.ozf: %.oz
 	@echo OZC $@
 	@$(OZC) $(OZFLAGS) -c $< -o $@

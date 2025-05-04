@@ -18,7 +18,7 @@ args = parser.parse_args()
 # read audio samples
 input_data = read(args.filename)
 audio = input_data[1]
-
+print(audio)
 # plot the first 1024 samples
 plt.plot(audio)
 
@@ -26,7 +26,7 @@ plt.plot(audio)
 plt.ylabel("Amplitude")
 plt.xlabel("Time")
 
-# set the title  
+# set the title
 plt.title(basename(args.filename))
 
 # display the plot
