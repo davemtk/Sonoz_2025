@@ -36,14 +36,12 @@ define
 		M_WI1 = [0.5#MusicSetup 0.5#MusicSetup2]
 		Music1 = [merge(M_WI1)]
 
-		Music2 = [repeat(amount:3 Samples)]
+		Music2 = [repeat(amount:4 MusicSetup)]
 
 
-		Music3 = [loop(duration:2.5 MusicSetup)]
+		Music3 = [loop(duration:3.65 MusicSetup)]
 
-
-		Fix = [samples(Samples)]
-		Music5 = [echo(delay:0.5 decay:0.3 repeat:5 Fix)]
+		Music5 = [echo(delay:0.5 decay:0.3 repeat:5 MusicSetup)]
 		{System.show {Mix P2T Music5}}
 
 
@@ -66,7 +64,7 @@ define
 			{System.show '=> out_repeat.wav'}
 			{System.show {Project2025.run Mix P2T Music2 'out_repeat.wav'}}
 			{System.show '=> out_loop.wav'}
-			{System.show {Project2025.run Mix P2T Music3 'out_repeat.wav'}}
+			{System.show {Project2025.run Mix P2T Music3 'out_loop.wav'}}
 			{System.show '=> out_clip.wav'}
 
 			{System.show '=> out_echo.wav'}

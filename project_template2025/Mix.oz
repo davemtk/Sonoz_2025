@@ -217,6 +217,8 @@ define
 	end
 
 	fun {Repeat N Music P2T}
+		{System.show repeat}
+		{System.show Music}
 		Samples = {Mix P2T Music}
 	in
 		{Repeating N Samples}
@@ -238,7 +240,8 @@ define
 		end
 
 		Samples = {Mix P2T Music}
-		SamplesCount = {FloatToInt Duration * 44100.0}
+		{System.show Duration}
+		SamplesCount = {FloatToInt (Duration * 44100.0)}
 		N = {Int.'div' SamplesCount {Length Samples}}
 		Base = {Repeating N Samples}
 		Trunc = {Truncate Samples 0 SamplesCount-{Length Samples}*(N)}
