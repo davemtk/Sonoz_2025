@@ -80,12 +80,19 @@ define
 	 	E1 = {Map P1 NoteToExtended}
 	 in
 		{System.show '----------- TestNotes -------------'}
-		{System.show E1}
-	 	{AssertEquals {P2T P1} E1 "TestNotes"}
+		{AssertEquals {P2T P1} E1 "TestNotes: a4 b4 silence"}
 	end
 
 	proc {TestChords P2T}
 		skip
+		P = [a4 b4]
+		E = [[
+		   note(name:a octave:4 sharp:false duration:1.0 instrument:none)
+		   note(name:b octave:4 sharp:false duration:1.0 instrument:none)
+		]]
+	 in
+		{System.show '----------- TestChords -------------'}
+		{AssertEquals {P2T P} E 'TestChords'}
 	end
 
 	proc {TestIdentity P2T}
@@ -94,7 +101,15 @@ define
 	end
 
 	proc {TestDuration P2T}
-		skip
+		P = duration(seconds:3.0 [a4 b4 c5])
+		E = [
+		   note(name:a octave:4 sharp:false duration:1.0 instrument:none)
+		   note(name:b octave:4 sharp:false duration:1.0 instrument:none)
+		   note(name:c octave:5 sharp:false duration:1.0 instrument:none)
+		]
+	 in
+		{System.show '----------- TestDuration -------------'}
+		{AssertEquals {P2T [P]} E 'TestDuration: 3 notes over 3s'}
 	end
 
 	proc {TestStretch P2T}

@@ -35,9 +35,9 @@
     fun {Count L}
         case L
         of nil then
-            0
+            0.0
         [] X | Y then
-            1 + {Count Y}
+            1.0 + {Count Y}
         end
     end
 
@@ -47,21 +47,15 @@
         case Partition
         of nil then nil
         [] X | Y then
-            {ApplyDurationAux DurationPerElement X} | {ApplyDurationAux DurationPerElement Y}
-        [] silence then
-            silence(duration: DurationPerElement)
-        [] Name#Octave then note(name:Name octave:Octave sharp:true duration:DurationPerElement instrument:none)
-        [] Atom then
-            case {AtomToString Atom}
-            of [_] then
-                note(name:Atom octave:4 sharp:false duration:DurationPerElement instrument:none)
-            [] [N O] then
-                note(name:{StringToAtom [N]}
-                    octave:{StringToInt [O]}
-                    sharp:false
-                    duration:DurationPerElement
-                    instrument: none)
-            end
+           if {IsRecord X} andthen {Label X} == note then
+              note(name:N octave:O sharp:S duration:D instrument:I) = X
+           in
+              note(name:N octave:O sharp:S duration:DurationPerElement instrument:I) | {ApplyDurationAux DurationPerElement Y}
+           elseif {IsRecord X} andthen {Label X} == silence then
+              silence(duration:D) = X
+           in
+              silence(duration:DurationPerElement) | {ApplyDurationAux DurationPerElement Y}
+           end
         end
      end
 

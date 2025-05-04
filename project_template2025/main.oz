@@ -51,5 +51,5 @@ define
 			% {System.show {Project2025.readFile CWD#'wave/animals/cow.wav'}}
 			% {System.show {Mix.mix PartitionToTimedList.partitionToTimedList Music}}
 		end
-	end
+	end	 
 end
